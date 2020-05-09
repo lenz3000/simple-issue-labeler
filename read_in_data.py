@@ -73,7 +73,8 @@ def train_log_reg_one_vs_all(X, y, label_names):
         if sum(y[:, label_i]) > 10:  # If there are more than 10 of this class
             scores = cross_val_score(clf, X, y[:, label_i], cv=5)
             print(
-                f"Label {label} -> Accuracy: {scores.mean():0.3f} (+/- {2 * scores.std():0.3f}) [{sum(y[:, label_i])/y.shape[0]:.3f} positive labels]")
+                f"Label {label} -> Accuracy: {scores.mean():0.3f} (+/- {2 * scores.std():0.3f}) [{int(sum(y[:, label_i])):d} ({sum(y[:, label_i])/y.shape[0]:.3f}) positive labels]")
+
         classifiers[label] = clf
 
     return classifiers
