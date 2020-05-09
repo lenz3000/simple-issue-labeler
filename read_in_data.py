@@ -3,6 +3,7 @@ import sklearn
 import numpy as np
 from sklearn import feature_extraction
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
 
 
 def get_labels_from_og(og_labels):
@@ -69,6 +70,10 @@ def train_log_reg_one_vs_all(X, y, label_names):
     classifiers = {}
     for label_i, label in enumerate(label_names):
         clf = LogisticRegression().fit(X, y[:, label_i])
+        if sum(y[:, label_i]) > 10:  # If there are more than 10 of this class
+            scores = cross_val_score(clf, X, y[:, label_i], cv=5)
+            print(
+                f"Label {label} -> Accuracy: {scores.mean():0.3f} (+/- {2 * scores.std():0.3f}) [{sum(y[:, label_i])/y.shape[0]:.3f} positive labels]")
         classifiers[label] = clf
 
     return classifiers
@@ -88,4 +93,4 @@ if __name__ == "__main__":
     data_dict = process_text_to_data_set(titles, new_labels)
     class_dict = train_log_reg_one_vs_all(
         *data_dict['labelled'], data_dict['label_names'])
-    apply_classifiers_to_data(class_dict, data_dict['full'], titles)
+    #apply_classifiers_to_data(class_dict, data_dict['full'], titles)
